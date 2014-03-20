@@ -10,8 +10,9 @@ INCDIRS		= -I. -I$(PREFIX)/include
 
 NAME		= $(shell basename $(PWD))
 
+CXX		= g++
 CPPFLAGS	=
-CFLAGS		= -g
+CFLAGS		= -O
 NVCCFLAGS	= -g
 ifeq ($(CXX), icpc)
   CFLAGS	= -O3
