@@ -11,7 +11,7 @@ INCDIRS		= -I. -I$(PREFIX)/include
 NAME		= $(shell basename $(PWD))
 
 CXX		= g++
-CPPFLAGS	=
+CPPFLAGS	= -DNDEBUG
 CFLAGS		= -O
 NVCCFLAGS	= -g
 ifeq ($(CXX), icpc)
