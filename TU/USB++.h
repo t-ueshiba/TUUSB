@@ -2,10 +2,10 @@
  *  $Id: USB++.h,v 1.1.1.1 2012-09-15 08:03:09 ueshiba Exp $
  */
 #ifndef __TU_USBPP_H
-#define __US_USBPP_H
+#define __TU_USBPP_H
 #include <sys/types.h>
-#include <usb.h>
 #include <iostream>
+#include <usb.h>
 
 namespace TU
 {
