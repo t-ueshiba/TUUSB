@@ -1,8 +1,8 @@
 /*
  *  $Id: USB++.h,v 1.1.1.1 2012-09-15 08:03:09 ueshiba Exp $
  */
-#ifndef __TU_USBPP_H
-#define __TU_USBPP_H
+#ifndef TU_USBPP_H
+#define TU_USBPP_H
 #include <sys/types.h>
 #include <iostream>
 #include <usb.h>
@@ -127,4 +127,4 @@ USBPort::isPowerOn() const
 }
     
 }
-#endif	// !__TU_USBPP_H
+#endif	// !TU_USBPP_H
