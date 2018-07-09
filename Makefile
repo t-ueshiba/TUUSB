@@ -39,8 +39,12 @@ INCDIR		= $(PREFIX)/include
 SUFFIX		= .cc:sC .cpp:sC .cu:sC
 EXTHDRS		=
 HDRS		= TU/USB++.h
-SRCS		= USBHub.cc
-OBJS		= USBHub.o
+SRCS		= USBDevice.cc \
+		USBHid.cc \
+		USBHub.cc
+OBJS		= USBDevice.o \
+		USBHid.o \
+		USBHub.o
 
 #include $(PROJECT)/lib/rtc.mk		# IDLHDRS, IDLSRCS, CPPFLAGS, OBJS, LIBS
 #include $(PROJECT)/lib/qt.mk		# MOCSRCS, OBJS
@@ -48,4 +52,6 @@ OBJS		= USBHub.o
 include $(PROJECT)/lib/lib.mk		# PUBHDRS TARGHDRS
 include $(PROJECT)/lib/common.mk
 ###
+USBDevice.o: TU/USB++.h
+USBHid.o: TU/USB++.h
 USBHub.o: TU/USB++.h

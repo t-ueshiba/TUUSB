@@ -1,8 +1,6 @@
 /*
  *  $Id: USBHub.cc,v 1.1.1.1 2012-09-15 08:03:09 ueshiba Exp $
  */
-#include <sstream>
-#include <stdexcept>
 #include "TU/USB++.h"
 
 namespace TU
@@ -17,49 +15,17 @@ static const u_int	USB_RT_PORT		= (USB_TYPE_CLASS |
 static const u_int	USB_PORT_FEAT_POWER	= 8;
 static const u_int	USB_PORT_FEAT_INDICATOR	= 22;
 
-static const u_int	USB_DIR_IN		= 0x80;		// to host
-
-static const u_int	HUB_LED_GREEN		= 2;
-
 static const u_int	HUB_CHAR_LPSM		= 0x0003;
 static const u_int	HUB_CHAR_PORTIND	= 0x0080;
 
 static const u_int	CTRL_TIMEOUT		= 1000;
 
 /************************************************************************
-*  static functions							*
-************************************************************************/
-static usb_dev_handle*
-usb_get_handle(uint16_t idVendor, uint16_t idProduct)
-{
-    for (usb_bus* bus = usb_get_busses(); bus; bus = bus->next)
-	for (struct usb_device* dev = bus->devices; dev; dev = dev->next)
-	    if (dev->descriptor.bDeviceClass == USB_CLASS_HUB &&
-		dev->descriptor.idVendor     == idVendor      &&
-		dev->descriptor.idProduct    == idProduct)
-		return usb_open(dev);
-
-    return 0;
-}
-
-/************************************************************************
 *  class USBHub								*
 ************************************************************************/
-USBHub::Initializer	USBHub::_initializer;
-    
 USBHub::USBHub(uint16_t idVendor, uint16_t idProduct)
-    :_handle(usb_get_handle(idVendor, idProduct)), _nports(0)
+    :USBDevice(idVendor, idProduct, USB_CLASS_HUB), _nports(0)
 {
-    if (_handle == 0)
-    {
-	using namespace	std;
-    
-	ostringstream	s;
-	s << "USBHub::USBHub(): failed to open hub(idVendor: 0x"
-	  << hex << idVendor << ", idProduct: 0x" << idProduct << ")!";
-	throw runtime_error(s.str());
-    }
-    
     initialize();
 }
 
@@ -92,30 +58,9 @@ USBHub::getLED(u_int port) const
     return getStatus(port) & 0x1000;
 }
 
-void
-USBHub::listup(std::ostream& out)
-{
-    for (usb_bus* bus = usb_get_busses(); bus; bus = bus->next)
-	for (struct usb_device* dev = bus->devices; dev; dev = dev->next)
-	    if (dev->descriptor.bDeviceClass == USB_CLASS_HUB)
-		out << "*** Hub at "
-		    << bus->dirname << ':' << int(dev->devnum)
-		    << " ***\n"
-		    << USBHub(usb_open(dev)) << std::endl;
-}
-
 /*
  *  private member functions
  */
-USBHub::USBHub(usb_dev_handle* handle)
-    :_handle(handle), _nports(0)
-{
-    if (_handle == 0)
-	throw std::runtime_error("USBHub::USBHub(): failed to open hub!");
-
-    initialize();
-}
-
 void
 USBHub::initialize()
 {
@@ -133,7 +78,7 @@ USBHub::initialize()
     };
     char	buf[1024];
     Desc*	desc = (Desc*)buf;
-    int		len = usb_control_msg(_handle, USB_DIR_IN | USB_RT_HUB,
+    int		len = usb_control_msg(handle(), USB_RT_HUB | USB_ENDPOINT_IN,
 				      USB_REQ_GET_DESCRIPTOR,
 				      USB_DT_HUB << 8, 0, 
 				      buf, sizeof(buf), CTRL_TIMEOUT);
@@ -166,8 +111,8 @@ USBHub::setStatus(u_int request, u_int feature, u_int index)
 {
     using namespace	std;
     
-    if (usb_control_msg(_handle, USB_RT_PORT, request, feature, index,
-			0, 0, CTRL_TIMEOUT) < 0)
+    if (usb_control_msg(handle(), USB_RT_PORT | USB_ENDPOINT_OUT,
+			request, feature, index, 0, 0, CTRL_TIMEOUT) < 0)
 	throw runtime_error(string("USBHub::setStatus(): failed in usb_control_msg()!") + usb_strerror());
     
     return *this;
@@ -180,8 +125,7 @@ USBHub::getStatus(u_int port) const
 
     u_int32_t	status;
     
-    if (usb_control_msg(_handle,
-			USB_ENDPOINT_IN | USB_TYPE_CLASS | USB_RECIP_OTHER,
+    if (usb_control_msg(handle(), USB_RT_PORT | USB_ENDPOINT_IN,
 			USB_REQ_GET_STATUS, 0, port + 1,
 			(char*)&status, sizeof(status), CTRL_TIMEOUT) < 0)
 	throw runtime_error(string("USBHub::getStatus(): failed in usb_control_msg()!") + usb_strerror());
