@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 2.4)
-
 project(TUUSB++)
 
 enable_language(CXX)
@@ -11,15 +10,19 @@ set(CMAKE_CXX_FLAGS_DEBUG	"-g")
 set(CMAKE_BUILD_TYPE		Release)
 add_definitions(-DNDEBUG)
 
-include_directories(. ${Boost_INCLUDE_DIRS})
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBUSB REQUIRED libusb)
+
+include_directories(
+    ${PROJECT_SOURCE_DIR}
+    ${LIBUSB_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIRS})
 
 file(GLOB sources *.cc)
-file(GLOB headers TU/*.h)
+add_library(${PROJECT_NAME} SHARED ${sources})
+target_link_libraries(${PROJECT_NAME} ${LIBUSB_LIBRARIES})
 
-add_library(TUUSB++ SHARED ${sources} ${headers})
-target_link_libraries(TUUSB++ usb)
-
-install(TARGETS TUUSB++ LIBRARY DESTINATION lib)
+install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)
 
 add_subdirectory(TU)
 
