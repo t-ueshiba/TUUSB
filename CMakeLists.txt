@@ -11,7 +11,10 @@ set(CMAKE_BUILD_TYPE		Release)
 add_definitions(-DNDEBUG)
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(LIBUSB REQUIRED libusb)
+pkg_check_modules(LIBUSB libusb)
+if(NOT LIBUSB_FOUND)
+    return()
+endif()
 
 include_directories(
     ${PROJECT_SOURCE_DIR}
@@ -25,4 +28,3 @@ target_link_libraries(${PROJECT_NAME} ${LIBUSB_LIBRARIES})
 install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)
 
 add_subdirectory(TU)
-
