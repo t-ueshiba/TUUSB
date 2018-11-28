@@ -21,6 +21,8 @@ include_directories(
     ${LIBUSB_INCLUDE_DIRS}
     ${Boost_INCLUDE_DIRS})
 
+link_directories(${CMAKE_INSTALL_PREFIX}/lib)
+
 file(GLOB sources *.cc)
 add_library(${PROJECT_NAME} SHARED ${sources})
 target_link_libraries(${PROJECT_NAME} ${LIBUSB_LIBRARIES})
