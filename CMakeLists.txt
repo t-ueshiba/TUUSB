@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.4)
-project(TUUSB++)
+project(TUUSB)
 
 enable_language(CXX)
 set(CMAKE_CXX_STANDARD		14)
