@@ -7,8 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED	ON)
 set(CMAKE_CXX_EXTENSIONS	OFF)
 set(CMAKE_CXX_FLAGS_RELEASE	"-Wall -O3 -DNDEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG	"-g")
-set(CMAKE_BUILD_TYPE		Release)
-add_definitions(-DNDEBUG)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBUSB libusb)
